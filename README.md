@@ -14,6 +14,7 @@ A powerful and flexible tool for populating database tables with real or mock da
 - **Case Conversion**: Transform between different case styles (camelCase, PascalCase, etc.)
 - **CLI Interface**: Easy-to-use command line interface
 - **Validation**: Validate data against schemas before import
+- **Duplicate Handling**: Configurable strategies for handling duplicate entries (skip or update)
 
 ## Installation
 
@@ -217,6 +218,127 @@ mock:
     productName: commerce.productName
     price: commerce.price
     description: commerce.productDescription
+```
+
+## Handling Duplicate Entries
+
+The setup-data package provides flexible options for handling duplicate entries during data import:
+
+### Configuration Options
+
+You can configure duplicate handling in the `setup-data.yml` file:
+
+```yaml
+database:
+  # Other database settings...
+  
+  # Duplicate handling options
+  duplicates:
+    # How to handle duplicate entries: 'fail' (default), 'skip', or 'update'
+    strategy: skip
+    # Fields to use as unique identifiers for detecting duplicates (optional)
+    # If not specified, primary key will be used
+    keys:
+      Categories: ["Name"]
+      Products: ["Name", "SKU"]
+      Users: ["Email", "Username"]
+```
+
+### Command-line Options
+
+You can also specify duplicate handling options on the command line:
+
+```bash
+# Skip duplicate entries
+pnpm run setup-data import -f "data.json" -t TableName --skip-duplicates
+
+# Update existing records when duplicates are found
+pnpm run setup-data import -f "data.json" -t TableName --update-duplicates
+```
+
+Command-line options take precedence over configuration file settings.
+
+### Import Script Options
+
+When using the import-all.js script, you can use these flags:
+
+```bash
+# Skip duplicate entries
+node import-all.js --skip-duplicates
+
+# Update existing records when duplicates are found
+node import-all.js --update-duplicates
+
+# Clear existing data before import
+node import-all.js --clear
+```
+
+---
+
+## Data Validation
+
+The setup-data package includes a powerful data validation utility that ensures your data complies with database constraints before import.
+
+### Automatic Field Length Validation
+
+The validation utility automatically checks and truncates fields that exceed the maximum length defined in your database schema:
+
+```javascript
+// Example of data validation in action
+node validate-data.js
+
+// Output
+ℹ Validating 20 items in Patients...
+⚠ Truncating Phone in Patients from 21 to 20 characters
+✓ Successfully validated and updated Patients data
+```
+
+### Integration with Import Process
+
+The validation is automatically performed before import when using the import-all.js script:
+
+```bash
+cd generated-data && node import-all.js --clear
+```
+
+### Custom Validation Rules
+
+You can define custom validation rules by editing the `validate-data.js` file and adding constraints for your entities:
+
+```javascript
+const entityConstraints = {
+  Categories: {
+    Name: { maxLength: 100 },
+    Description: { maxLength: 500 }
+  },
+  // Add more entities and constraints as needed
+};
+```
+
+## Handling Circular References
+
+When working with Entity Framework and navigation properties, you might encounter circular reference issues during serialization. The setup-data package handles this automatically, but if you're experiencing 500 Internal Server Error responses from your API, consider these solutions:
+
+1. **Use Specialized DTOs**: Create separate DTOs for list and detail views to avoid circular references
+
+```csharp
+// Instead of using the same DTO for all operations
+public class CategoryDto { ... }
+
+// Create specialized DTOs for different operations
+public class CategoryListDto { ... } // For GetAll endpoint
+public class CategoryDetailDto { ... } // For GetById endpoint with related entities
+```
+
+1. **Configure JSON serialization** in your API to ignore circular references
+
+```csharp
+// In Program.cs or Startup.cs
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+    });
 ```
 
 ## Contributing
