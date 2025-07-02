@@ -179,9 +179,10 @@ Generate mock data based on a schema.
 - `tableName`: Table/entity name
 - `fakerSeed`: Seed for Faker.js
 
-## CLI Commands
+## Documentation
 
-For detailed CLI documentation, see the [CLI Guide](./bin/CLI-GUIDE.md).
+- [User Guide for Non-Developers](./USERS-GUIDE.md): A comprehensive guide for non-technical users
+- [CLI Commands Reference](./bin/CLI-GUIDE.md): Detailed documentation for all CLI commands
 
 ## Advanced Usage
 

@@ -1,6 +1,6 @@
 {
   "name": "setup-data",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A tool for populating database tables with real or mock data",
   "main": "src/index.js",
   "bin": {
