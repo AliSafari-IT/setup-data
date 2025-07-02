@@ -1,6 +1,6 @@
 {
   "name": "setup-data",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A tool for populating database tables with real or mock data",
   "main": "src/index.js",
   "bin": {
@@ -38,5 +38,9 @@
   },
   "engines": {
     "node": ">=14.0.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AliSafari-IT/setup-data.git"
+    }
 }
